@@ -1,90 +1,134 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 
 function App() {
-  const [form, setForm] = useState({ name: "", email: "", age: "" });
-  const [users, setUsers] = useState([]);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    age: "",
+    phone: "",
+    address: "",
+    gender: "",
+    dob: ""
+  });
 
+  // Handle input changes
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Submit form data
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.age) {
-      alert("All fields are required");
-      return;
-    }
     try {
-      await axios.post("http://localhost:5000/addUser", form);
-      setForm({ name: "", email: "", age: "" });
-      fetchUsers();
-    } catch (err) {
-      alert(err.response?.data?.message || "Something went wrong");
+      const response = await fetch("http://localhost:5000/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.text();
+      alert(data);
+    } catch (error) {
+      console.error("Error:", error);
     }
   };
-
-  const fetchUsers = async () => {
-    const res = await axios.get("http://localhost:5000/users");
-    setUsers(res.data);
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-500 via-pink-500 to-yellow-500 p-6">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center text-purple-700 mb-6">
-          User Registration
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-lg"
+      >
+        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
+          Government Application Form
         </h2>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="name"
-            placeholder="Enter name"
-            value={form.name}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-400 focus:outline-none"
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Enter email"
-            value={form.email}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none"
-          />
-          <input
-            type="number"
-            name="age"
-            placeholder="Enter age"
-            value={form.age}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-400 focus:outline-none"
-          />
-          <button
-            type="submit"
-            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 rounded-lg font-semibold hover:opacity-90 transition"
-          >
-            Submit
-          </button>
-        </form>
+        {/* Name */}
+        <input
+          type="text"
+          name="name"
+          placeholder="Full Name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+          className="w-full p-3 border rounded mb-4"
+        />
 
-        <h3 className="text-lg font-semibold text-gray-700 mt-6">Users</h3>
-        <ul className="mt-2 space-y-2">
-          {users.map((u) => (
-            <li key={u.id} className="bg-purple-100 text-purple-800 px-4 py-2 rounded-lg shadow-sm">
-              <span className="font-bold">{u.name}</span> | {u.email} | {u.age}
-            </li>
-          ))}
-        </ul>
-      </div>
+        {/* Email */}
+        <input
+          type="email"
+          name="email"
+          placeholder="Email Address"
+          value={formData.email}
+          onChange={handleChange}
+          required
+          className="w-full p-3 border rounded mb-4"
+        />
+
+        {/* Age */}
+        <input
+          type="number"
+          name="age"
+          placeholder="Age"
+          value={formData.age}
+          onChange={handleChange}
+          required
+          className="w-full p-3 border rounded mb-4"
+        />
+
+        {/* Phone */}
+        <input
+          type="text"
+          name="phone"
+          placeholder="Phone Number"
+          value={formData.phone}
+          onChange={handleChange}
+          required
+          className="w-full p-3 border rounded mb-4"
+        />
+
+        {/* Address */}
+        <textarea
+          name="address"
+          placeholder="Address"
+          value={formData.address}
+          onChange={handleChange}
+          required
+          className="w-full p-3 border rounded mb-4"
+        ></textarea>
+
+        {/* Gender */}
+        <select
+          name="gender"
+          value={formData.gender}
+          onChange={handleChange}
+          required
+          className="w-full p-3 border rounded mb-4"
+        >
+          <option value="">Select Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+
+        {/* DOB */}
+        <input
+          type="date"
+          name="dob"
+          value={formData.dob}
+          onChange={handleChange}
+          required
+          className="w-full p-3 border rounded mb-6"
+        />
+
+        {/* Submit */}
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 transition"
+        >
+          Submit Application
+        </button>
+      </form>
     </div>
   );
 }
